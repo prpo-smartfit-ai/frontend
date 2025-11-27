@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
+import AuthGuard from './components/AuthGuard';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import LandingPage from './pages/LandingPage';
@@ -50,6 +51,7 @@ function Home() {
 function App() {
   return (
     <AuthProvider>
+      <AuthGuard>
       <BrowserRouter>
         <Routes>
           <Route path="/login" element={<Login />} />
@@ -64,6 +66,7 @@ function App() {
           <Route path="/" element={<LandingPage />} />
         </Routes>
       </BrowserRouter>
+      </AuthGuard>
     </AuthProvider>
   );
 }

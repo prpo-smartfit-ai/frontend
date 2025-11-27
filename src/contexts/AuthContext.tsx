@@ -51,9 +51,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const register = async (email: string, password: string, firstName: string, lastName: string) => {
     try {
-      await userService.register(email, password, firstName, lastName);
-      // Auto-login after registration
-      await login(email, password);
+      const response = await userService.register(email, password, firstName, lastName);
+      // store token and user from registration response
+      localStorage.setItem('authToken', response.data.token);
+      localStorage.setItem('user', JSON.stringify(response.data.user));
+      setUser(response.data.user);
     } catch (error) {
       console.error('Registration failed:', error);
       throw error;
