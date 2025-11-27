@@ -1,39 +1,71 @@
-function App() {
-  return (
-    <div className="min-h-screen flex flex-col bg-white dark:bg-gray-900">
-      <header className="bg-gradient-to-br from-purple-600 to-purple-800 text-white py-12 px-8 text-center">
-        <h1 className="text-5xl font-bold m-0">SmartFit AI</h1>
-        <p className="text-xl mt-2 opacity-95">AI-Powered Fitness Tracking & Personalized Training</p>
-      </header>
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import LandingPage from './pages/LandingPage';
 
-      <main className="flex-1 max-w-6xl w-full mx-auto py-12 px-8">
-        <section className="text-center mb-12">
-          <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto leading-relaxed">
-            Track your workouts, monitor your progress, and receive personalized
-            training recommendations powered by artificial intelligence.
-          </p>
-        </section>
-
-        <section className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-8">
-          <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-8 text-center transition-all hover:-translate-y-1 hover:shadow-lg">
-            <h3 className="text-2xl mb-4 text-gray-800 dark:text-gray-100">Track Workouts</h3>
-            <p className="text-gray-600 dark:text-gray-300 leading-normal m-0">Log your training sessions and monitor your progress over time</p>
-          </div>
-
-          <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-8 text-center transition-all hover:-translate-y-1 hover:shadow-lg">
-            <h3 className="text-2xl mb-4 text-gray-800 dark:text-gray-100">AI Training Plans</h3>
-            <p className="text-gray-600 dark:text-gray-300 leading-normal m-0">Get personalized workout plans based on your goals and history</p>
-          </div>
-
-          <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-8 text-center transition-all hover:-translate-y-1 hover:shadow-lg">
-            <h3 className="text-2xl mb-4 text-gray-800 dark:text-gray-100">Share Progress</h3>
-            <p className="text-gray-600 dark:text-gray-300 leading-normal m-0">Connect with friends and share your fitness achievements</p>
-          </div>
-        </section>
-      </main>
-
-    </div>
-  )
+function PrivateRoute({ children }: { children: React.ReactNode }) {
+  const { isAuthenticated, isLoading } = useAuth();
+  
+  if (isLoading) {
+    return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
+  }
+  
+  return isAuthenticated ? <>{children}</> : <Navigate to="/login" />;
 }
 
-export default App
+function Home() {
+  const { user, logout } = useAuth();
+  
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <header className="bg-white shadow">
+        <div className="max-w-7xl mx-auto px-4 py-6 flex justify-between items-center">
+          <h1 className="text-3xl font-bold text-gray-900">SmartFit AI</h1>
+          <div className="flex items-center gap-4">
+            <span className="text-gray-700">
+              Welcome, {user?.firstName} {user?.lastName}!
+            </span>
+            <button
+              onClick={logout}
+              className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+            >
+              Logout
+            </button>
+          </div>
+        </div>
+      </header>
+      <main className="max-w-7xl mx-auto px-4 py-8">
+        <div className="bg-white rounded-lg shadow p-8">
+          <h2 className="text-2xl font-bold mb-4">Dashboard</h2>
+          <p className="text-gray-600">
+            Welcome to SmartFit AI! You have successfully registered and logged in.
+          </p>
+        </div>
+      </main>
+    </div>
+  );
+}
+
+function App() {
+  return (
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          
+          <Route path="/home" element={
+            <PrivateRoute>
+              <Home />
+            </PrivateRoute>
+          } />
+          
+          <Route path="/" element={<LandingPage />} />
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
+  );
+}
+
+export default App;

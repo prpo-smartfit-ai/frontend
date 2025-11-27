@@ -10,4 +10,12 @@ export default defineConfig({
       },
     }),
   ],
+  server: {
+    proxy: {
+      '/v1/users': {
+        target: 'http://localhost:8080',
+        changeOrigin: true,
+      },
+    },
+  },
 })

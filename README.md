@@ -10,6 +10,7 @@ SmartFit AI je fitnes aplikacija, ki uporabnikom omogoča sledenje vadbenim akti
 
 ### Predpogoji
 - Node.js 18+ in npm
+- Zagnan user service
 
 ### Namestitev
 
