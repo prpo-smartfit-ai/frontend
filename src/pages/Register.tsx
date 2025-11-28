@@ -38,7 +38,8 @@ export default function Register() {
       await register(formData.email, formData.password, formData.firstName, formData.lastName);
       navigate('/home');
     } catch (err) {
-      setError('Registration failed. Email may already be in use.');
+      const errorMessage = err instanceof Error ? err.message : 'Registration failed. Email may already be in use.';
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }

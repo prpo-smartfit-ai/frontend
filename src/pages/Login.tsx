@@ -22,7 +22,8 @@ export default function Login() {
       await login(email, password);
       navigate('/home');
     } catch (err) {
-      setError('Invalid email or password. Please try again.');
+      const errorMessage = err instanceof Error ? err.message : 'Invalid email or password. Please try again.';
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }

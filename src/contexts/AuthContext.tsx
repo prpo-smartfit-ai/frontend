@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
-import type { User } from '../types';
+import type { User, UserProfile } from '../types';
 import { userService } from '../api/userService';
 
 interface AuthContextType {
@@ -11,6 +11,8 @@ interface AuthContextType {
   register: (email: string, password: string, firstName: string, lastName: string) => Promise<void>;
   logout: () => void;
   updateUser: (user: User) => void;
+  fetchCurrentUser: () => Promise<void>;
+  fetchUserProfile: () => Promise<UserProfile | null>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -62,6 +64,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const fetchCurrentUser = async () => {
+    try {
+      const response = await userService.getCurrentUser();
+      setUser(response.data);
+      localStorage.setItem('user', JSON.stringify(response.data));
+    } catch (error) {
+      console.error('Failed to fetch current user:', error);
+      // token is invalid, logout
+      logout();
+    }
+  };
+
+  const fetchUserProfile = async (): Promise<UserProfile | null> => {
+    try {
+      const response = await userService.getUserProfile();
+      return response.data;
+    } catch (error) {
+      console.error('Failed to fetch user profile:', error);
+      return null;
+    }
+  };
+
   const logout = () => {
     localStorage.removeItem('authToken');
     localStorage.removeItem('user');
@@ -84,6 +108,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         register,
         logout,
         updateUser,
+        fetchCurrentUser,
+        fetchUserProfile,
       }}
     >
       {children}
