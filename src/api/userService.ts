@@ -24,4 +24,8 @@ export const userService = {
   async getUserProfile(): Promise<ApiResponse<UserProfile>> {
     return apiClient.get(`${API_ENDPOINTS.users}/profile`);
   },
+
+  async updateProfile(profileData: Partial<UserProfile>): Promise<ApiResponse<UserProfile>> {
+    return apiClient.put(`${API_ENDPOINTS.users}/profile`, profileData);
+  },
 };

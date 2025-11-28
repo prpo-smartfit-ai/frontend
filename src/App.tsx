@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import AuthGuard from './components/AuthGuard';
@@ -5,24 +6,55 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import LandingPage from './pages/LandingPage';
 import ProfilePage from './pages/ProfilePage';
+import OnboardingPage from './pages/OnboardingPage';
 
-function PrivateRoute({ children }: { children: React.ReactNode }) {
-  const { isAuthenticated, isLoading } = useAuth();
-  
-  if (isLoading) {
+function PrivateRoute({ children, requireOnboarding = false }: { children: React.ReactNode, requireOnboarding?: boolean }) {
+  const { isAuthenticated, isLoading, user, fetchUserProfile } = useAuth();
+  const [needsOnboarding, setNeedsOnboarding] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    if (isAuthenticated && user && requireOnboarding === false) {
+      const checkOnboarding = async () => {
+        try {
+          const profile = await fetchUserProfile();
+          if (!profile || !profile.age || !profile.height || !profile.currentWeight) {
+            setNeedsOnboarding(true);
+          } else {
+            setNeedsOnboarding(false);
+          }
+        } catch (error) {
+          // if profile fetch fails, assume onboarding is needed
+          setNeedsOnboarding(true);
+        }
+      };
+      checkOnboarding();
+    } else {
+      setNeedsOnboarding(false);
+    }
+  }, [isAuthenticated, user, fetchUserProfile, requireOnboarding]);
+
+  if (isLoading || needsOnboarding === null) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
       </div>
     );
   }
-  
-  return isAuthenticated ? <>{children}</> : <Navigate to="/login" />;
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" />;
+  }
+
+  if (needsOnboarding) {
+    return <Navigate to="/onboarding" />;
+  }
+
+  return <>{children}</>;
 }
 
 function Home() {
   const { user, logout } = useAuth();
-  
+
   return (
     <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900">
       <header className="bg-white dark:bg-gray-800 shadow">
@@ -69,7 +101,13 @@ function App() {
           <Routes>
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
-            
+
+            <Route path="/onboarding" element={
+              <PrivateRoute requireOnboarding={true}>
+                <OnboardingPage />
+              </PrivateRoute>
+            } />
+
             <Route path="/home" element={
               <PrivateRoute>
                 <Home />
@@ -81,7 +119,7 @@ function App() {
                 <ProfilePage />
               </PrivateRoute>
             } />
-            
+
             <Route path="/" element={<LandingPage />} />
           </Routes>
         </BrowserRouter>

@@ -13,6 +13,7 @@ interface AuthContextType {
   updateUser: (user: User) => void;
   fetchCurrentUser: () => Promise<void>;
   fetchUserProfile: () => Promise<UserProfile | null>;
+  updateProfile: (profileData: Partial<UserProfile>) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -86,6 +87,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const updateProfile = async (profileData: Partial<UserProfile>) => {
+    try {
+      await userService.updateProfile(profileData);
+      // optionally refetch the user profile to update local state
+      await fetchCurrentUser();
+    } catch (error) {
+      console.error('Failed to update profile:', error);
+      throw error;
+    }
+  };
+
   const logout = () => {
     localStorage.removeItem('authToken');
     localStorage.removeItem('user');
@@ -110,6 +122,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         updateUser,
         fetchCurrentUser,
         fetchUserProfile,
+        updateProfile,
       }}
     >
       {children}
