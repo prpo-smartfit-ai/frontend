@@ -1,0 +1,19 @@
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: smartfit-frontend-dev
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_BASE_URL=http://localhost:8080
+    volumes:
+      - .:/app
+      - /app/node_modules
+    networks:
+      - frontend-network
+
+networks:
+  frontend-network:
+    driver: bridge
