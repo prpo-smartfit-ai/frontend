@@ -5,7 +5,7 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen flex flex-col bg-white dark:bg-gray-900">
       <header className="bg-gradient-to-br from-purple-600 to-purple-800 text-white py-12 px-8 text-center">
-        <h1 className="text-5xl font-bold m-0">SmartFit AI - testing cicd deploy</h1>
+        <h1 className="text-5xl font-bold m-0">SmartFit AI</h1>
         <p className="text-xl mt-2 opacity-95">AI-Powered Fitness Tracking & Personalized Training</p>
         
         <div className="mt-8 flex items-center justify-center space-x-4">
