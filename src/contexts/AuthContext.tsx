@@ -5,6 +5,7 @@ import { userService } from '../api/userService';
 
 interface AuthContextType {
   user: User | null;
+  userProfile: UserProfile | null;
   isAuthenticated: boolean;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
@@ -20,6 +21,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -80,6 +82,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const fetchUserProfile = async (): Promise<UserProfile | null> => {
     try {
       const response = await userService.getUserProfile();
+      setUserProfile(response.data);
       return response.data;
     } catch (error) {
       console.error('Failed to fetch user profile:', error);
@@ -89,8 +92,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const updateProfile = async (profileData: Partial<UserProfile>) => {
     try {
-      await userService.updateProfile(profileData);
-      // optionally refetch the user profile to update local state
+      const response = await userService.updateProfile(profileData);
+      // Update local context states
+      setUserProfile(response.data);
+      // Also fetch current user to sync basic info like firstName/lastName if they changed
       await fetchCurrentUser();
     } catch (error) {
       console.error('Failed to update profile:', error);
@@ -114,6 +119,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     <AuthContext.Provider
       value={{
         user,
+        userProfile,
         isAuthenticated: !!user,
         isLoading,
         login,

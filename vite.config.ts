@@ -16,6 +16,14 @@ export default defineConfig({
         target: 'http://localhost:8080',
         changeOrigin: true,
       },
+      '/v1/ai': {
+        target: 'http://localhost:8082',
+        changeOrigin: true,
+      },
+      '/v1/workouts': {
+        target: 'http://localhost:8081',
+        changeOrigin: true,
+      },
     },
   },
 })

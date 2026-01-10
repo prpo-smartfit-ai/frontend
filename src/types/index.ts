@@ -40,3 +40,37 @@ export interface ApiError {
   error?: string;
   message?: string;
 }
+
+// workout types
+export interface Exercise {
+  id: string;
+  name: string;
+  sets: number;
+  reps: string; // e.g., "8-12", "3x5"
+  duration?: number; // in seconds
+  instructions?: string;
+  equipment?: string;
+  difficulty: 'beginner' | 'intermediate' | 'advanced';
+}
+
+export interface Workout {
+  id: string;
+  name: string;
+  description?: string;
+  duration: number; // in minutes
+  difficulty: 'beginner' | 'intermediate' | 'advanced';
+  exercises: Exercise[];
+  focusAreas: string[]; // e.g., ['chest', 'triceps', 'cardio']
+  date?: string;
+  completed?: boolean;
+}
+
+export interface WorkoutSession {
+  id: string;
+  workoutId: string;
+  userId: string;
+  startTime: string;
+  endTime?: string;
+  exercisesCompleted: number;
+  notes?: string;
+}

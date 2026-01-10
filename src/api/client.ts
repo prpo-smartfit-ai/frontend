@@ -1,9 +1,25 @@
-const API_BASE_URL = import.meta.env.DEV
-  ? '' // use Vite proxy in dev
-  : (import.meta.env.VITE_API_BASE_URL || '');
+// Service port configuration
+const SERVICE_PORTS = {
+  users: 8083,
+  workouts: 8081,
+  ai: 8082,
+};
+
+const API_BASE_HOST = 'http://localhost';
+
+const buildServiceUrl = (service: keyof typeof SERVICE_PORTS): string => {
+  if (import.meta.env.DEV) {
+    return ''; // use Vite proxy in dev
+  }
+  // In Docker, use service-specific ports
+  const port = SERVICE_PORTS[service];
+  return `${API_BASE_HOST}:${port}`;
+};
 
 export const API_ENDPOINTS = {
-  users: `${API_BASE_URL}/v1/users`,
+  users: `${buildServiceUrl('users')}/v1/users`,
+  workouts: `${buildServiceUrl('workouts')}/v1/workouts`,
+  ai: `${buildServiceUrl('ai')}/v1/ai`,
 };
 
 class ApiClient {
