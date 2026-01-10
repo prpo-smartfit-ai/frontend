@@ -1,7 +1,7 @@
 {
   "name": "smartfit-ai-frontend",
   "private": true,
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Frontend for SmartFit AI - AI-powered fitness tracking application",
   "type": "module",
   "scripts": {
