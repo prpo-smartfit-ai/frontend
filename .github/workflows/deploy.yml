@@ -2,7 +2,7 @@ name: Build and Deploy Frontend
 
 on:
   push:
-    branches: [ master, main, develop, test-cicd ]
+    branches: [ master ]
 
 jobs:
   build-and-push:
